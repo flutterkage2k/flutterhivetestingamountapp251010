@@ -19,17 +19,20 @@ class CategoryAdapter extends TypeAdapter<Category> {
     return Category(
       name: fields[0] as String,
       type: fields[1] as TransactionType,
+      isDefault: fields[2] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, Category obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(3)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
-      ..write(obj.type);
+      ..write(obj.type)
+      ..writeByte(2)
+      ..write(obj.isDefault);
   }
 
   @override

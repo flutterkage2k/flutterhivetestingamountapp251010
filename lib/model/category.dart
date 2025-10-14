@@ -16,10 +16,14 @@ class Category {
   @HiveField(1)
   final TransactionType type; // 수입/지출 구분
 
+  @HiveField(2)
+  final bool isDefault;
+
   Category({
     this.key,
     required this.name,
     required this.type,
+    this.isDefault = false,
   });
 
   // 카테고리 수정을 위한 copyWith 메서드
@@ -27,11 +31,13 @@ class Category {
     int? key,
     String? name,
     TransactionType? type,
+    bool? isDefault,
   }) {
     return Category(
       key: key ?? this.key,
       name: name ?? this.name,
       type: type ?? this.type,
+      isDefault: isDefault ?? this.isDefault, // isDefault 처리 추가
     );
   }
 

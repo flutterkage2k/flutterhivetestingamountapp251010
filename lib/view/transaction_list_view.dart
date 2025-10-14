@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutterhivetestingamountapp251010/view/category_list_view.dart';
 import 'package:flutterhivetestingamountapp251010/view/widget/summary_card.dart';
 import 'package:flutterhivetestingamountapp251010/view/widget/transaction_list_item.dart';
 
@@ -19,6 +20,19 @@ class TransactionListView extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('나의 가계부 💰'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  // ⭐️ CategoryListView로 이동 ⭐️
+                  builder: (context) => const CategoryListView(),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: Column(
         children: [

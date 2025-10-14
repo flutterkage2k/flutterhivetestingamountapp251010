@@ -22,9 +22,9 @@ class CategoryRepository {
     if (categoryBox.isEmpty) {
       // ⭐️ 기본 카테고리 (실수 방지용) ⭐️
       final defaultCategories = [
-        Category(name: '식비', type: TransactionType.expense),
-        Category(name: '교통', type: TransactionType.expense),
-        Category(name: '월급', type: TransactionType.income),
+        Category(name: '식비', type: TransactionType.expense, isDefault: true),
+        Category(name: '교통', type: TransactionType.expense, isDefault: true),
+        Category(name: '월급', type: TransactionType.income, isDefault: true),
       ];
 
       for (var category in defaultCategories) {
@@ -37,7 +37,8 @@ class CategoryRepository {
   // 3. 카테고리 추가
   Future<void> addCategory(Category category) async {
     final categoryBox = await box;
-    final key = await categoryBox.add(category);
+    final newCategory = category.copyWith(isDefault: false);
+    final key = await categoryBox.add(newCategory);
     await categoryBox.put(key, category.copyWith(key: key));
   }
 
@@ -51,13 +52,14 @@ class CategoryRepository {
   Future<void> updateCategory(Category category) async {
     if (category.key == null) return;
     final categoryBox = await box;
-    // .put(key, value)를 호출하면, 이 카테고리 key를 사용하고 있는 모든
-    // Transaction 객체에는 영향을 주지 않고,
-    // 오직 카테고리 이름(Category name)만 변경됩니다.
-    await categoryBox.put(category.key!, category);
+    // isDefault는 수정하지 않도록 기존 카테고리 데이터를 먼저 가져옵니다.
+    final existingCategory = categoryBox.get(category.key!)!;
 
-    // 이 카테고리 key만 저장하고 있는 Transaction 데이터는
-    // 나중에 Category Box에서 이름을 찾아올 때 자동으로 새 이름을 사용하게 됩니다!
+    // ⭐️ isDefault 필드가 유지되도록 copyWith 사용 ⭐️
+    final updatedCategory = category.copyWith(
+      isDefault: existingCategory.isDefault,
+    );
+    await categoryBox.put(category.key!, updatedCategory);
   }
 
   // 6. 카테고리 삭제 (🚨 삭제 시 처리 로직이 복잡해지므로, 초기 단계에서는 생략)
