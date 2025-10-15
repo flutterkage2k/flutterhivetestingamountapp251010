@@ -1,6 +1,7 @@
 // lib/provider/transaction_notifier.dart
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutterhivetestingamountapp251010/provider/current_month_provider.dart';
 
 import '../model/transaction.dart';
 import '../repository/transaction_repository.dart';
@@ -67,4 +68,31 @@ final transactionProvider = StateNotifierProvider<TransactionNotifier, List<Tran
   notifier.loadTransactions();
 
   return notifier;
+});
+
+// ⭐️ 필터링된 거래 목록 Provider ⭐️
+final filteredTransactionsProvider = Provider<List<Transaction>>((ref) {
+  // 현재 선택된 월(StateNotifier)을 watch합니다.
+  final currentMonth = ref.watch(currentMonthProvider);
+
+  // ⭐️ 수정: allTransactionsAsync 대신 allTransactions로 변수명 변경 ⭐️
+  // ⭐️ 그리고 .whenData 없이 List<Transaction>을 직접 watch합니다. ⭐️
+  final allTransactions = ref.watch(transactionProvider); // List<Transaction> 타입
+
+  // 만약 allTransactions가 비어있다면 필터링을 건너뜁니다.
+  if (allTransactions.isEmpty) {
+    return [];
+  }
+
+  // 필터링 시작일 (월의 첫 날)
+  final startOficialMonth = DateTime(currentMonth.year, currentMonth.month, 1);
+  // 필터링 종료일 (다음 달의 첫 날)
+  final startOfNextMonth = DateTime(currentMonth.year, currentMonth.month + 1, 1);
+
+  return allTransactions.where((t) {
+    // 거래 날짜가 선택된 월의 시작일보다 크거나 같고
+    // 다음 달의 시작일보다 작은 경우만 포함합니다.
+    return t.date.isBefore(startOfNextMonth) &&
+        t.date.isAfter(startOficialMonth.subtract(const Duration(milliseconds: 1)));
+  }).toList();
 });

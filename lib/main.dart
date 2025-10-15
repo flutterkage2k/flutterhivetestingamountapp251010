@@ -6,7 +6,7 @@ import 'package:flutterhivetestingamountapp251010/model/transaction.dart';
 import 'package:flutterhivetestingamountapp251010/model/transaction_type.dart';
 import 'package:flutterhivetestingamountapp251010/repository/category_repository.dart';
 import 'package:flutterhivetestingamountapp251010/view/transaction_list_view.dart';
-import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 import 'repository/transaction_repository.dart'; // Repository 임포트
 
@@ -14,6 +14,10 @@ import 'repository/transaction_repository.dart'; // Repository 임포트
 void main() async {
   // Flutter 엔진 초기화 보장 (비동기 처리 전에 필요)
   WidgetsFlutterBinding.ensureInitialized();
+
+  // ⭐️ 1. Hive 초기화 책임 이관 및 경로 안정화 ⭐️
+  // main.dart에서 직접 Hive를 초기화하여 영구적인 저장소 경로를 보장합니다.
+  await Hive.initFlutter();
 
   // ⭐️ 중요: Repository 초기화 전에 모든 어댑터를 등록합니다. ⭐️
   if (!Hive.isAdapterRegistered(TransactionTypeAdapter().typeId)) {
